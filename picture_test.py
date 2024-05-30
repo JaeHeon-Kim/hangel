@@ -17,12 +17,14 @@ imagelist = [i.rsplit("/", maxsplit=1)[1] for i in imagelist]  # 이미지리스
 표_리스트 = list(set([i.split("_")[0][:-1] for i in imagelist]))
 표_리스트.sort()
 
+print(표_리스트)
+
 hwp=win32.Dispatch("HWPFrame.HwpObject")
 
 hwp.RegisterModule("FilePathCheckDLL", "SecurityModule")
 hwp.XHwpWindows.Item(0).Visible = True
 
-hwp.Open("C:\\Users\\pjy28\\Desktop\\develop\\picture_test.hwpx")
+# hwp.Open("C:\\Users\\pjy28\\Desktop\\develop\\picture_test.hwpx")
 
 # 가운데 정렬
 hwp.HAction.GetDefault("ParagraphShape", hwp.HParameterSet.HParaShape.HSet)
@@ -35,7 +37,7 @@ hwp.HAction.Execute("ParagraphShape", hwp.HParameterSet.HSecDef.HSet)
 # %% 여백조정
 
 hwp.HAction.GetDefault("PageSetup", hwp.HParameterSet.HSecDef.HSet)
-hwp.HParameterSet.HSecDef.PageDef.Landscape = 1  # 가로로
+# hwp.HParameterSet.HSecDef.PageDef.Landscape = 1  # 가로로
 hwp.HParameterSet.HSecDef.PageDef.LeftMargin = hwp.MiliToHwpUnit(15.0)
 hwp.HParameterSet.HSecDef.PageDef.RightMargin = hwp.MiliToHwpUnit(15.0)
 hwp.HParameterSet.HSecDef.PageDef.TopMargin = hwp.MiliToHwpUnit(20.0)
@@ -47,16 +49,20 @@ hwp.HParameterSet.HSecDef.HSet.SetItem("ApplyClass", 24)
 hwp.HParameterSet.HSecDef.HSet.SetItem("ApplyTo", 3)  # 문서 전체 변경
 hwp.HAction.Execute("PageSetup", hwp.HParameterSet.HSecDef.HSet)
 
+##표 만들기
+
+
+
 for idx, content in enumerate(표_리스트):
     # %% 표 생성
     
     hwp.HAction.GetDefault("TableCreate", hwp.HParameterSet.HTableCreation.HSet)
     hwp.HParameterSet.HTableCreation.Rows = 4
-    hwp.HParameterSet.HTableCreation.Cols = 1
+    hwp.HParameterSet.HTableCreation.Cols = 4
     hwp.HParameterSet.HTableCreation.WidthType = 2
     hwp.HParameterSet.HTableCreation.HeightType = 1
-    hwp.HParameterSet.HTableCreation.WidthValue = hwp.MiliToHwpUnit(110)  # 표만들기 포스팅 참고 
-    hwp.HParameterSet.HTableCreation.HeightValue = hwp.MiliToHwpUnit(150)
+    hwp.HParameterSet.HTableCreation.WidthValue = hwp.MiliToHwpUnit(150)  # 표만들기 포스팅 참고 
+    hwp.HParameterSet.HTableCreation.HeightValue = hwp.MiliToHwpUnit(110)
     hwp.HParameterSet.HTableCreation.CreateItemArray("ColWidth", 5)
     hwp.HParameterSet.HTableCreation.ColWidth.SetItem(0, hwp.MiliToHwpUnit(79.73))
     hwp.HParameterSet.HTableCreation.ColWidth.SetItem(1, hwp.MiliToHwpUnit(79.73))
@@ -299,17 +305,19 @@ for idx, content in enumerate(표_리스트):
 
     # %% 텍스트 필드에 문자열 삽입
     
-    hwp.PutFieldText(f"{idx}_name", content.split("..")[0])
-    hwp.PutFieldText(f"{idx}_code", content.split(".")[1])
-    hwp.PutFieldText(f"{idx}_type", "(속도" + content.split("..")[-1] + "*)")
+    # hwp.PutFieldText(f"{idx}_name", content.split("..")[0])
+    # hwp.PutFieldText(f"{idx}_code", content.split(".")[1])
+    # hwp.PutFieldText(f"{idx}_type", "(속도" + content.split("..")[-1] + "*)")
 
  # %% 이미지 삽입
     
 slot_list = [f"{idx}_E_time", f"{idx}_E_PDF", f"{idx}_E_temporal", f"{idx}_N_time", f"{idx}_N_PDF",
                  f"{idx}_N_temporal", f"{idx}_Z_time", f"{idx}_Z_PDF", f"{idx}_Z_temporal"]  # 이미지 삽입할 셀 필드 리스트
 for j in slot_list:
-    hwp.MoveToField(j)  # 해당 필드로 이동
+    # hwp.MoveToField(j)  # 해당 필드로 이동
     hwp.InsertPicture(os.path.join(BASE_DIR, f"{content + j.split('_', maxsplit=1)[1]}.png"), Embedded=True,
                           sizeoption=3)  # 이미지 삽입
     hwp.Run("MoveDocEnd")  # 문서 끝으로 이동
     # hwp.Run("DeleteBack")  # 엔터 하나 삭제
+
+    print("os 매개변수", os.path.join(BASE_DIR, f"{content + j.split('_', maxsplit=1)[1]}.png"))
